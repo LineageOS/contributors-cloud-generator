@@ -16,6 +16,11 @@ The LineageOS contributors cloud scripts.
 > of known emails for the account
 >
 >      Name on Gerrit|nick|email1|email2|...
+>
+> To re-build the java class if needing to make changes type:
+>    cd source/
+>    mvn package
+>    cp target/laos-contributors-cloud-generator-1.0.jar ../lib/
 
 This project is based in a modified version of the
 [kumo](https://github.com/kennycason/kumo) library.
