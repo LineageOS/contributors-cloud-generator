@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.lineageos</groupId>
-    <artifactId>laos-contributors-cloud-generator</artifactId>
+    <artifactId>contributors-cloud-generator</artifactId>
     <name>${project.artifactId}</name>
     <version>1.0</version>
 
