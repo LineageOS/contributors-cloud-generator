@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.NullPointerException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
@@ -620,11 +621,15 @@ public class CloudGenerator {
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("select id, commits, name, filter from cloud_data order by 1;");
         while (rs.next()) {
-            String id = rs.getString(1);
-            String commits = rs.getString(2);
-            String name = cleanup(rs.getString(3));
-            String filter = cleanup(rs.getString(4));
-            fw.write(String.format("%s,%s,%s|%s", id, commits, name, filter) + "\r\n");
+            try {
+                String id = rs.getString(1);
+                String commits = rs.getString(2);
+                String name = cleanup(rs.getString(3));
+                String filter = cleanup(rs.getString(4));
+                fw.write(String.format("%s,%s,%s|%s", id, commits, name, filter) + "\r\n");
+            } catch (NullPointerException e) {
+                // Do nothing, one of the columns returns null pointer
+            }
         }
         fw.close();
         rs.close();
