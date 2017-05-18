@@ -1,5 +1,13 @@
 # LineageOS contributors cloud generator
 
+To build the jar, run the following:
+
+    cd source/
+    mvn package
+    cp target/contributors-cloud-generator-1.0.jar ../lib/
+
+If you make changes in `source/`, this will need to be re-built
+
 To generate the code, open a linux console and type:
 
     ./generate_wordcloud.sh
@@ -13,12 +21,6 @@ format of this file should match the name of the account and the list
 of known emails for the account
 
     Name on Gerrit|nick|email1|email2|...
-
-To re-build the java class if needing to make changes type:
-
-    cd source/
-    mvn package
-    cp target/contributors-cloud-generator-1.0.jar ../lib/
 
 This project is based in a modified version of the
 [kumo](https://github.com/kennycason/kumo) library.
