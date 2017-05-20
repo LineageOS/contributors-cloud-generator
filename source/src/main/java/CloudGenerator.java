@@ -315,7 +315,7 @@ public class CloudGenerator {
     private static void generateCloudDataFromGerrit(Connection conn) throws Exception {
         Statement st = conn.createStatement();
         st.execute("insert into cloud_data (commits, id, name, username, filter) " +
-                "select count(*) commits, a.id, a.name, a.username, f.filter from ( " +
+                "select count(*) commits, a.id, ifnull(a.name, a.username), a.username, f.filter from ( " +
                 "select (select e.id from emails e where e.email = c.author_email) id, changeId from gerrit_commits c " +
                 "where c.subject <> 'Automatic translation import' " +
                 ") c, accounts a, " +
