@@ -60,7 +60,7 @@ if [ -z "$1" ]; then
         && grep "\"id\":" $PROJECTS_LIST | awk -F"\"" '{print $4}' | grep -v "LineageOS\/\.\|LineageOS\/LineageOS" > $PROJECTS_LIST_TMP \
         && mv $PROJECTS_LIST_TMP $PROJECTS_LIST \
         && rm $PROJECTS_LIST.bak
-    cat $PROJECTS_LIST | xargs --max-procs=$MAXJOBS -I % ./repo_fetch.sh %
+    cat $PROJECTS_LIST | xargs -P=$MAXJOBS -I % ./repo_fetch.sh %
 fi
 
 # Generate the cloud
