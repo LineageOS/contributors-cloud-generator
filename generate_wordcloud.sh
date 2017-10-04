@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # We are running on macOS, check for GNU sort
+    if ! type gsort &> /dev/null; then
+        echo "Please install gsort (GNU sort) before using this script"
+        exit 1
+    fi
+    SORT_BINARY=gsort
+else
+    SORT_BINARY=sort
+fi
+
 ## Declares
 script_datestart=$(date +"%s")
 MAXJOBS=16
@@ -32,15 +43,13 @@ if [ -z "$1" ]; then
         ERRORS=0
         echo "FETCHING NEW ACCOUNTS FROM $ACCOUNT ...";
         until [ $ERRORS -eq 10 ]; do
-            let ACCOUNT+=1
-            wget -O $ACCOUNTS_DIR/$ACCOUNT https://review.lineageos.org/accounts/$ACCOUNT
+            BULK=100
+            curl -f $(eval echo https://review.lineageos.org/accounts/[$ACCOUNT-$(($ACCOUNT+$BULK))]) -o "$ACCOUNTS_DIR/#1"
             if [ $? -ne 0 ]; then
                 let ERRORS+=1
-                rm $ACCOUNTS_DIR/$ACCOUNT
-                continue;
             fi
-            ERRORS=0
-            echo $ACCOUNT > $ACCOUNTS_LAST
+            let ACCOUNT+=100
+            echo $(cd $ACCOUNTS_DIR; printf '%s\n' r[0-9]* | $SORT_BINARY --version-sort | tail -n 1) > $ACCOUNTS_LAST
         done
     else
         echo "DONT FETCH NEW ACCOUNTS...";
