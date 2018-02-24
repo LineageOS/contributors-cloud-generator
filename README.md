@@ -10,7 +10,7 @@ If you make changes in `source/`, this will need to be re-built
 
 To generate the code, open a linux console and type:
 
-    ./generate_wordcloud.sh
+    ./generate_wordcloud.py
 
 This will fetch all LineageOS repos (around 110Gb), parse the commits
 logs, mix the data and generate a cloud.zip in the output
