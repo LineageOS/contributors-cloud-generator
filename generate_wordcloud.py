@@ -40,8 +40,8 @@ for account in accounts:
 
 def repo_fetch(project):
     project_stats_dir = os.path.join(stats_dir,project)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(project_stats_dir):
+        os.makedirs(project_stats_dir)
     repodir = os.path.join(projects_dir,project+'.git')
     if os.path.exists(repodir):
         call(['git', '-C', repodir, 'fetch', 'origin'])
@@ -52,10 +52,10 @@ def repo_fetch(project):
         else:
             call(['git', 'clone', '--no-checkout', 'https://github.com/'+project, repodir])
 
-    f = open(project_stats_dir+'/all_stats.dat', 'w')
+    f = open(os.path.join(project_stats_dir,'/all_stats.dat'), 'w')
     call(['git', '-C', repodir, 'shortlog', '-esn', '--all'], stdout=f)
     f.close()
-    f = open(project_stats_dir+'/translations_stats.dat', 'w')
+    f = open(os.path.join(project_stats_dir,'/translation_stats.dat'), 'w')
     call(['git', '-C', repodir, 'shortlog', '-esn', '--all', '--grep="Automatic translation import"'], stdout=f)
     f.close()
 
