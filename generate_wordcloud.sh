@@ -33,7 +33,7 @@ if [ -z "$1" ]; then
         echo "FETCHING NEW ACCOUNTS FROM $ACCOUNT ...";
         until [ $ERRORS -eq 10 ]; do
             let ACCOUNT+=1
-            wget -O $ACCOUNTS_DIR/$ACCOUNT https://review.lineageos.org/accounts/$ACCOUNT
+            wget -q -O $ACCOUNTS_DIR/$ACCOUNT https://review.lineageos.org/accounts/$ACCOUNT
             if [ $? -ne 0 ]; then
                 let ERRORS+=1
                 rm $ACCOUNTS_DIR/$ACCOUNT
