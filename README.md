@@ -16,6 +16,14 @@ your local mirror by doing the following:
 
     export MIRROR_ROOT=/path/to/mirror
 
+If you have a Lineage Gerrit account and wish to authenticate with
+your credentials, set them via environment variable as such, where
+xxxxx and yyyyyy are the actual plain-text username and password
+values:
+
+    export GERRIT_USERNAME=xxxxx
+    export GERRIT_PASSWORD=yyyyy
+
 To generate the code, open a linux console and type:
 
     ./generate_wordcloud.sh

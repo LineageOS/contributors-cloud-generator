@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.NullPointerException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
@@ -46,6 +47,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -173,8 +175,8 @@ public class CloudGenerator {
             conn.commit();
             conn.close();
             if (!connMetadata.isClosed()) {
-	            connMetadata.commit();
-	            connMetadata.close();
+                connMetadata.commit();
+                connMetadata.close();
             }
         }
     }
@@ -468,6 +470,9 @@ public class CloudGenerator {
         c.add(Calendar.DAY_OF_YEAR, 1);
         String start = sdf.format(c.getTime());
 
+        String gerrit_username = System.getenv("GERRIT_USERNAME");
+        String gerrit_password = System.getenv("GERRIT_PASSWORD");
+
         LOGGER.info("Fetching gerrit changes: " + end);
         File dir = new File(CHANGES_DIR, end);
         dir.mkdirs();
@@ -476,14 +481,26 @@ public class CloudGenerator {
         final int count = 250;
         while (true) {
             try {
-                String url = "https://review.lineageos.org/changes/?q=status:merged+before:\"" + start + "\"+after:\"" + end + "\"&n=" + count + "&O=a&o=DETAILED_ACCOUNTS";
+                String url = "changes/?q=status:merged+before:\"" + start + "\"+after:\"" + end + "\"&n=" + count + "&O=a&o=DETAILED_ACCOUNTS";
                 if (s > 0) {
                     url += "&S="+s;
                 }
 
+                InputStream in = null;
+                if (gerrit_username.isEmpty() || gerrit_password.isEmpty()) {
+                    in = new URL("https://review.lineageos.org/" + url).openStream();
+                }
+                else {
+                    URL ur = new URL("https://review.lineageos.org/a/" + url);
+                    URLConnection uc = ur.openConnection();
+                    String userpass = gerrit_username + ":" + gerrit_password;
+                    String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                    uc.setRequestProperty ("Authorization", basicAuth);
+                    in = uc.getInputStream();
+                }
+
                 BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(
-                                new URL(url).openStream(), "UTF-8"));
+                        new InputStreamReader(in, "UTF-8"));
                 FileWriter fw = new FileWriter(new File(dir, String.valueOf(i)));
                 reader.readLine();
                 int read = -1;
@@ -955,25 +972,25 @@ public class CloudGenerator {
             String line = null;
             while ((line = br.readLine()) != null) {
                 try {
-                	int commits = Integer.parseInt(line.substring(0, line.indexOf("\t")).trim());
-                	String name = cleanup(line.substring(line.indexOf("\t")+1,line.lastIndexOf("<")).trim());
-	                String email = cleanup(line.substring(line.lastIndexOf("<")+1, line.length()-1).trim());
-	
-	                ps1.setString(1, project);
-	                ps1.setInt(2, commits);
-	                if (isEmpty(name)) {
-	                    ps1.setNull(3, Types.VARCHAR);
-	                } else {
-	                    ps1.setString(3, name);
-	                }
-	                if (isEmpty(email)) {
-	                    ps1.setNull(4, Types.VARCHAR);
-	                } else {
-	                    ps1.setString(4, email);
-	                }
-	                ps1.execute();
+                    int commits = Integer.parseInt(line.substring(0, line.indexOf("\t")).trim());
+                    String name = cleanup(line.substring(line.indexOf("\t")+1,line.lastIndexOf("<")).trim());
+                    String email = cleanup(line.substring(line.lastIndexOf("<")+1, line.length()-1).trim());
+
+                    ps1.setString(1, project);
+                    ps1.setInt(2, commits);
+                    if (isEmpty(name)) {
+                        ps1.setNull(3, Types.VARCHAR);
+                    } else {
+                        ps1.setString(3, name);
+                    }
+                    if (isEmpty(email)) {
+                        ps1.setNull(4, Types.VARCHAR);
+                    } else {
+                        ps1.setString(4, email);
+                    }
+                    ps1.execute();
                 } catch (Exception ex ) {
-                	// Ignore this commit
+                    // Ignore this commit
                 }
             }
             br.close();
@@ -1067,25 +1084,29 @@ public class CloudGenerator {
     }
 
     private static String cleanup(String src) {
-        String dst = src;
-        int s = src.indexOf("(");
-        int e = src.indexOf(")");
-        if (s != -1 && s < e) {
-            dst = dst.substring(0, s) + dst.substring(e + 1);
-        }
-        s = dst.indexOf("[");
-        e = dst.indexOf("]");
-        if (s != -1 && s < e) {
-            dst = dst.substring(0, s) + dst.substring(e + 1);
-        }
-        s = dst.indexOf("~");
-        if (s != -1) {
-            dst = dst.substring(0, s);
-        }
-        dst = dst.replaceAll("\\|", "");
-        dst = dst.replaceAll("\u200e", "");
-        dst = dst.replaceAll("\u200f", "");
-        return dst.replaceAll("  ", " ").trim();
+		try {
+			String dst = src;
+			int s = src.indexOf("(");
+			int e = src.indexOf(")");
+			if (s != -1 && s < e) {
+				dst = dst.substring(0, s) + dst.substring(e + 1);
+			}
+			s = dst.indexOf("[");
+			e = dst.indexOf("]");
+			if (s != -1 && s < e) {
+				dst = dst.substring(0, s) + dst.substring(e + 1);
+			}
+			s = dst.indexOf("~");
+			if (s != -1) {
+				dst = dst.substring(0, s);
+			}
+			dst = dst.replaceAll("\\|", "");
+			dst = dst.replaceAll("\u200e", "");
+			dst = dst.replaceAll("\u200f", "");
+			return dst.replaceAll("  ", " ").trim();
+		} catch (NullPointerException e) {
+			return src;
+		}
     }
 
     private static boolean isLegalName(String name) {
@@ -1099,6 +1120,10 @@ public class CloudGenerator {
     private static boolean userHasCommits(int id, int accountId, String name, String email) {
         InputStream is = null;
         String url = null;
+
+        String gerrit_username = System.getenv("GERRIT_USERNAME");
+        String gerrit_password = System.getenv("GERRIT_PASSWORD");
+
         try {
             if (id <= wellKnownAccounts) {
                 return true;
@@ -1111,13 +1136,20 @@ public class CloudGenerator {
                 return false;
             }
 
-            String owner = name + " <" + email + ">";
-            if (isEmpty(name)) {
-                owner = name + " <" + email + ">";
+            url = "https://review.lineageos.org/changes/?q=status:merged+owner:\"" + email+ "\"&limit=1";
+            email = URLEncoder.encode(email, "UTF-8");
+            InputStream in = null;
+            if (gerrit_username.isEmpty() || gerrit_password.isEmpty()) {
+                is = new URL("https://review.lineageos.org/changes/?q=status:merged+owner:\"" + email+ "\"&limit=1").openStream();
             }
-            url = "https://review.lineageos.org/changes/?q=status:merged+owner:\"" + owner+ "\"&limit=1";
-            owner = URLEncoder.encode(owner, "UTF-8");
-            is = new URL("https://review.lineageos.org/changes/?q=status:merged+owner:\"" + owner+ "\"&limit=1").openStream();
+            else {
+                URL ur = new URL("https://review.lineageos.org/a/changes/?q=status:merged+owner:\"" + email+ "\"&limit=1");
+                URLConnection uc = ur.openConnection();
+                String userpass = gerrit_username + ":" + gerrit_password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                uc.setRequestProperty ("Authorization", basicAuth);
+                is = uc.getInputStream();
+            }
             byte[] data = new byte[11];
             int read = is.read(data);
             LOGGER.info ("Fetched " + url + ": " + (read > 8));
