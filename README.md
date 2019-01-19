@@ -16,6 +16,14 @@ your local mirror by doing the following:
 
     export MIRROR_ROOT=/path/to/mirror
 
+If you have a Lineage Gerrit account and wish to authenticate with
+your credentials, set them via environment variable as such, where
+xxxxx and yyyyyy are the actual plain-text username and password
+values:
+
+    export GERRIT_USERNAME=xxxxx
+    export GERRIT_PASSWORD=yyyyy
+
 Not everyone can see every change on Gerrit. Some changes are private
 for various reasons, some old changes are on branches that are hidden
 for performance reasons. If you cannot see all the changes then a
