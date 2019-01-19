@@ -173,8 +173,8 @@ public class CloudGenerator {
             conn.commit();
             conn.close();
             if (!connMetadata.isClosed()) {
-	            connMetadata.commit();
-	            connMetadata.close();
+                connMetadata.commit();
+                connMetadata.close();
             }
         }
     }
@@ -468,6 +468,9 @@ public class CloudGenerator {
         c.add(Calendar.DAY_OF_YEAR, 1);
         String start = sdf.format(c.getTime());
 
+        String gerrit_username = System.getenv("GERRIT_USERNAME");
+        String gerrit_password = System.getenv("GERRIT_PASSWORD");
+
         LOGGER.info("Fetching gerrit changes: " + end);
         File dir = new File(CHANGES_DIR, end);
         dir.mkdirs();
@@ -476,7 +479,13 @@ public class CloudGenerator {
         final int count = 250;
         while (true) {
             try {
-                String url = "https://review.lineageos.org/changes/?q=status:merged+before:\"" + start + "\"+after:\"" + end + "\"&n=" + count + "&O=a&o=DETAILED_ACCOUNTS";
+                String url = null;
+                if (gerrit_username.isEmpty() || gerrit_password.isEmpty()) {
+                    url = "https://review.lineageos.org/changes/?q=status:merged+before:\"" + start + "\"+after:\"" + end + "\"&n=" + count + "&O=a&o=DETAILED_ACCOUNTS";
+                }
+                else {
+                    url = "https://" + URLEncoder.encode(gerrit_username, "UTF-8") + ":" + URLEncoder.encode(gerrit_password, "UTF-8") + "@review.lineageos.org/a/changes/?q=status:merged+before:\"" + start + "\"+after:\"" + end + "\"&n=" + count + "&O=a&o=DETAILED_ACCOUNTS";
+                }
                 if (s > 0) {
                     url += "&S="+s;
                 }
@@ -955,25 +964,25 @@ public class CloudGenerator {
             String line = null;
             while ((line = br.readLine()) != null) {
                 try {
-                	int commits = Integer.parseInt(line.substring(0, line.indexOf("\t")).trim());
-                	String name = cleanup(line.substring(line.indexOf("\t")+1,line.lastIndexOf("<")).trim());
-	                String email = cleanup(line.substring(line.lastIndexOf("<")+1, line.length()-1).trim());
-	
-	                ps1.setString(1, project);
-	                ps1.setInt(2, commits);
-	                if (isEmpty(name)) {
-	                    ps1.setNull(3, Types.VARCHAR);
-	                } else {
-	                    ps1.setString(3, name);
-	                }
-	                if (isEmpty(email)) {
-	                    ps1.setNull(4, Types.VARCHAR);
-	                } else {
-	                    ps1.setString(4, email);
-	                }
-	                ps1.execute();
+                    int commits = Integer.parseInt(line.substring(0, line.indexOf("\t")).trim());
+                    String name = cleanup(line.substring(line.indexOf("\t")+1,line.lastIndexOf("<")).trim());
+                    String email = cleanup(line.substring(line.lastIndexOf("<")+1, line.length()-1).trim());
+
+                    ps1.setString(1, project);
+                    ps1.setInt(2, commits);
+                    if (isEmpty(name)) {
+                        ps1.setNull(3, Types.VARCHAR);
+                    } else {
+                        ps1.setString(3, name);
+                    }
+                    if (isEmpty(email)) {
+                        ps1.setNull(4, Types.VARCHAR);
+                    } else {
+                        ps1.setString(4, email);
+                    }
+                    ps1.execute();
                 } catch (Exception ex ) {
-                	// Ignore this commit
+                    // Ignore this commit
                 }
             }
             br.close();
@@ -1099,6 +1108,10 @@ public class CloudGenerator {
     private static boolean userHasCommits(int id, int accountId, String name, String email) {
         InputStream is = null;
         String url = null;
+
+        String gerrit_username = System.getenv("GERRIT_USERNAME");
+        String gerrit_password = System.getenv("GERRIT_PASSWORD");
+
         try {
             if (id <= wellKnownAccounts) {
                 return true;
@@ -1111,13 +1124,14 @@ public class CloudGenerator {
                 return false;
             }
 
-            String owner = name + " <" + email + ">";
-            if (isEmpty(name)) {
-                owner = name + " <" + email + ">";
+            url = "https://review.lineageos.org/changes/?q=status:merged+owner:\"" + email+ "\"&limit=1";
+            email = URLEncoder.encode(email, "UTF-8");
+            if (gerrit_username.isEmpty() || gerrit_password.isEmpty()) {
+                is = new URL("https://review.lineageos.org/changes/?q=status:merged+owner:\"" + email+ "\"&limit=1").openStream();
             }
-            url = "https://review.lineageos.org/changes/?q=status:merged+owner:\"" + owner+ "\"&limit=1";
-            owner = URLEncoder.encode(owner, "UTF-8");
-            is = new URL("https://review.lineageos.org/changes/?q=status:merged+owner:\"" + owner+ "\"&limit=1").openStream();
+            else {
+                is = new URL("https://" + URLEncoder.encode(gerrit_username, "UTF-8") + ":" + URLEncoder.encode(gerrit_password, "UTF-8") + "@review.lineageos.org/a/changes/?q=status:merged+owner:\"" + email+ "\"&limit=1").openStream();
+            }
             byte[] data = new byte[11];
             int read = is.read(data);
             LOGGER.info ("Fetched " + url + ": " + (read > 8));

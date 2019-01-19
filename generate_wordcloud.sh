@@ -6,6 +6,13 @@ MAXJOBS=16
 
 OUT_DIR=out
 OUT_CLOUD_ZIP=out/cloud.zip
+
+if [ [ -z "$GERRIT_USERNAME" ] || [ -z "$GERRIT_PASSWORD"  ] ]; then
+    GERRIT_URL="https://review.lineageos.org"
+else
+    GERRIT_URL="https://${GERRIT_USERNAME}:${GERRIT_PASSWORD}@review.lineageos.org/a"
+fi
+
 mkdir -p $OUT_DIR
 
 if [ -z "$1" ]; then
@@ -33,7 +40,7 @@ if [ -z "$1" ]; then
         echo "FETCHING NEW ACCOUNTS FROM $ACCOUNT ...";
         until [ $ERRORS -eq 10 ]; do
             let ACCOUNT+=1
-            wget -q -O $ACCOUNTS_DIR/$ACCOUNT https://review.lineageos.org/accounts/$ACCOUNT
+            wget -q -O $ACCOUNTS_DIR/$ACCOUNT $GERRIT_URL/accounts/$ACCOUNT
             if [ $? -ne 0 ]; then
                 let ERRORS+=1
                 rm $ACCOUNTS_DIR/$ACCOUNT
@@ -55,7 +62,7 @@ if [ -z "$1" ]; then
     mkdir -p $PROJECTS_DIR
     rm -Rf $STATS_DIR
     mkdir -p $STATS_DIR
-    wget -O $PROJECTS_LIST https://review.lineageos.org/projects/?p=LineageOS%2F \
+    wget -O $PROJECTS_LIST $GERRIT_URL/projects/?p=LineageOS%2F \
         && perl -i -pe  's/%2F/\//g' $PROJECTS_LIST \
         && grep "\"id\":" $PROJECTS_LIST | awk -F"\"" '{print $4}' | grep -v "LineageOS\/\.\|LineageOS\/LineageOS" > $PROJECTS_LIST_TMP \
         && mv $PROJECTS_LIST_TMP $PROJECTS_LIST \
