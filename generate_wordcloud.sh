@@ -8,7 +8,7 @@ OUT_DIR=out
 OUT_CLOUD_ZIP=out/cloud.zip
 mkdir -p $OUT_DIR
 
-if [ -z "$1" ]; then
+if [ -n "$1" ]; then
     ## Download new gerrit accounts
     ACCOUNTS_DIR=db/accounts
     ACCOUNTS_LAST=$ACCOUNTS_DIR/last.txt
