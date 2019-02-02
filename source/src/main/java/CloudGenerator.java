@@ -392,7 +392,7 @@ public class CloudGenerator {
         ps1.close();
 
         st.execute("insert into cloud_data (commits, id, name, username, filter) " +
-                    "select sum(r.commits), r.id, r.name, r.username, r.filter from raw_cloud_data r, accounts a "+
+                    "select sum(r.commits), r.id, ifnull(r.name, r.username), r.username, r.filter from raw_cloud_data r, accounts a "+
                     "where r.id = a.id and a.accountId in (select accountId from all_accounts_with_commits) " +
                     "group by  r.name");
 
