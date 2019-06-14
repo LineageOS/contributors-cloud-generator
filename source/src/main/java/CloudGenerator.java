@@ -88,7 +88,7 @@ public class CloudGenerator {
     private static final String CLOUD_BG_PNG = ROOT_DIR + "resources/lineageos.png";
     private static final String CLOUD_FONT = ROOT_DIR + "resources/Roboto-Bold.ttf";
     private static final String LAST_CLOUD_SIZE = ROOT_DIR + "db/last_cloud_size.txt";
-    private static final int DEFAULT_CLOUD_SIZE = 1896;
+    private static final int DEFAULT_CLOUD_SIZE = 1928;
     private static final int DEFAULT_CLOUD_INCREMENT = 16;
 
     private static int wellKnownAccounts;
