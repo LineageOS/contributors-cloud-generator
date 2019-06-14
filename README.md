@@ -16,13 +16,14 @@ This will fetch all LineageOS repos (around 110Gb), parse the commits
 logs, mix the data and generate a cloud.zip in the output
 folder. This will take look long time the first time.
 
-The file resources/well-known-accounts.txt was left willfully empty. The
-format of this file should match the name of the account and the list
-of known emails for the account
+The file resources/well-known-accounts.txt allows merging multiple
+Gerrit accounts into a single cloud entry. The format of this file
+should match the name of the account and the list of known emails for
+the account
 
     Name on Gerrit|nick|email1|email2|...
 
 This project is based in a modified version of the
 [kumo](https://github.com/kennycason/kumo) library.
 
-Copyright © 2017 The LineageOS Project
+Copyright © 2017-2019 The LineageOS Project
