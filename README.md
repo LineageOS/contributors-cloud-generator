@@ -16,6 +16,16 @@ your local mirror by doing the following:
 
     export MIRROR_ROOT=/path/to/mirror
 
+Not everyone can see every change on Gerrit. Some changes are private
+for various reasons, some old changes are on branches that are hidden
+for performance reasons. If you cannot see all the changes then a
+cloud of 1928x1928 will not be filled; the base image will grow as
+required, but it will not shrink. You can decrease the initial size by
+creating a text file containing a single value. For example, a 900x900
+initial size cloud can be created by doing the following:
+
+    echo "900" > db/last_cloud_size.txt
+
 To generate the code, open a linux console and type:
 
     ./generate_wordcloud.sh
