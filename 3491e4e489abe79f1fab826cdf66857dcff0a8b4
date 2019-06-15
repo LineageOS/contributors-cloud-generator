@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b290c028_1b22fd6c",
+        "filename": "source/src/main/java/CloudGenerator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1088,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2019-06-15T13:57:40Z",
+      "side": 1,
+      "message": "Tabs -\u003e spaces",
+      "range": {
+        "startLine": 1088,
+        "startChar": 0,
+        "endLine": 1088,
+        "endChar": 3
+      },
+      "revId": "3491e4e489abe79f1fab826cdf66857dcff0a8b4",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": true
+    }
+  ]
+}
