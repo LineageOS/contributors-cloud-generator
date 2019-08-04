@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c1235b9_018e7303",
+        "filename": "source/src/main/java/CloudGenerator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1110,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2019-08-04T12:28:26Z",
+      "side": 1,
+      "message": "Maybe this should be a separate commit? Doesn\u0027t look related",
+      "range": {
+        "startLine": 1088,
+        "startChar": 0,
+        "endLine": 1110,
+        "endChar": 9
+      },
+      "revId": "e0380184ae28d54048c3c4a2c738260a17002ec0",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": true
+    }
+  ]
+}
