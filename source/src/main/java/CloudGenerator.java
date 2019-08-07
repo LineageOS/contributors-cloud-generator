@@ -1085,25 +1085,29 @@ public class CloudGenerator {
     }
 
     private static String cleanup(String src) {
-        String dst = src;
-        int s = src.indexOf("(");
-        int e = src.indexOf(")");
-        if (s != -1 && s < e) {
-            dst = dst.substring(0, s) + dst.substring(e + 1);
+        try {
+            String dst = src;
+            int s = src.indexOf("(");
+            int e = src.indexOf(")");
+            if (s != -1 && s < e) {
+                dst = dst.substring(0, s) + dst.substring(e + 1);
+            }
+            s = dst.indexOf("[");
+            e = dst.indexOf("]");
+            if (s != -1 && s < e) {
+                dst = dst.substring(0, s) + dst.substring(e + 1);
+            }
+            s = dst.indexOf("~");
+            if (s != -1) {
+                dst = dst.substring(0, s);
+            }
+            dst = dst.replaceAll("\\|", "");
+            dst = dst.replaceAll("\u200e", "");
+            dst = dst.replaceAll("\u200f", "");
+            return dst.replaceAll("  ", " ").trim();
+        } catch (NullPointerException e) {
+            return src;
         }
-        s = dst.indexOf("[");
-        e = dst.indexOf("]");
-        if (s != -1 && s < e) {
-            dst = dst.substring(0, s) + dst.substring(e + 1);
-        }
-        s = dst.indexOf("~");
-        if (s != -1) {
-            dst = dst.substring(0, s);
-        }
-        dst = dst.replaceAll("\\|", "");
-        dst = dst.replaceAll("\u200e", "");
-        dst = dst.replaceAll("\u200f", "");
-        return dst.replaceAll("  ", " ").trim();
     }
 
     private static boolean isLegalName(String name) {
