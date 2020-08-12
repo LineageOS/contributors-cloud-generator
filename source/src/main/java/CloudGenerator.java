@@ -500,8 +500,7 @@ public class CloudGenerator {
                 }
 
                 BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(
-                                new InputStreamReader(in, "UTF-8"));
+                        new InputStreamReader(in, "UTF-8"));
                 FileWriter fw = new FileWriter(new File(dir, String.valueOf(i)));
                 reader.readLine();
                 int read = -1;
