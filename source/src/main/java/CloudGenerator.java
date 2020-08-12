@@ -4,7 +4,8 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -65,7 +66,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class CloudGenerator {
 
-    private static final Logger LOGGER = Logger.getLogger(CloudGenerator.class);
+    private static final Logger LOGGER = LogManager.getLogger(CloudGenerator.class);
 
     private static final String ROOT_DIR = "./";
     private static final String DB_NAME = ROOT_DIR + "db/cloud.db";

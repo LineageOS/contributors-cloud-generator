@@ -1,6 +1,7 @@
 package wordcloud;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import wordcloud.bg.Background;
 import wordcloud.font.CloudFont;
 import wordcloud.font.scale.FontScalar;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class LayeredWordCloud {
 
-    private static final Logger LOGGER = Logger.getLogger(LayeredWordCloud.class);
+    private static final Logger LOGGER = LogManager.getLogger(LayeredWordCloud.class);
 
     private final int width;
 
