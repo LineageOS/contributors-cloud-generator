@@ -31,7 +31,7 @@ if [ -z "$1" ]; then
         fi
         ERRORS=0
         echo "FETCHING NEW ACCOUNTS FROM $ACCOUNT ...";
-        until [ $ERRORS -eq 10 ]; do
+        until [ $ERRORS -eq 30 ]; do
             let ACCOUNT+=1
             wget -O $ACCOUNTS_DIR/$ACCOUNT https://review.lineageos.org/accounts/$ACCOUNT
             if [ $? -ne 0 ]; then
