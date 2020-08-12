@@ -1,4 +1,5 @@
 db
+lib/contributors-cloud-generator-1.0.jar
 out
 source/target/
 resources/lineageos.png

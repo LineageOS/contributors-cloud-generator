@@ -3,7 +3,8 @@ package wordcloud;
 import ch.lambdaj.Lambda;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import wordcloud.bg.Background;
 import wordcloud.bg.RectangleBackground;
 import wordcloud.collide.RectanglePixelCollidable;
@@ -43,7 +44,7 @@ import static ch.lambdaj.Lambda.on;
  */
 public class WordCloud {
 
-    private static final Logger LOGGER = Logger.getLogger(WordCloud.class);
+    private static final Logger LOGGER = LogManager.getLogger(WordCloud.class);
 
     protected final int width;
 
