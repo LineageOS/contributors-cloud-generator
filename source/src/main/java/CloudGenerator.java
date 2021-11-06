@@ -520,6 +520,7 @@ public class CloudGenerator {
 
                 i++;
                 s+=count;
+                LOGGER.info("Fetching more gerrit changes: " + end + " (" + i + ")");
 
             } catch (Exception ex) {
                 LOGGER.error("Error downloading gerrit changes " + end + "-" + start, ex);
